@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Coparenta — Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16302B;
+    --primary:#2E7D6B;
+    --primary-soft:#E1EFEA;
+    --mist:#F1F5F3;
+    --surface:#FFFFFF;
+    --amber:#E0913C;
+    --amber-soft:#FBEFDC;
+    --coral:#D0654B;
+    --coral-soft:#F8E4DE;
+    --muted:#6E817C;
+    --line:#E2EAE7;
+    --line-strong:#CDDAD5;
+    --r1: Fraunces, Georgia, serif;
+    --r2: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --shadow: 0 8px 30px rgba(22,48,43,.08);
+    --shadow-card: 0 2px 10px rgba(22,48,43,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:var(--r2);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #E7F1ED 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #EDEAE1 0%, transparent 55%),
+      #E9EDEA;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    min-height:100vh;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  ::-webkit-scrollbar{width:0;height:0}
+
+  /* ---------- Layout shell ---------- */
+  .layout{display:flex;width:100%;gap:0}
+  .sidebar{
+    width:300px;flex-shrink:0;height:100vh;position:sticky;top:0;
+    padding:26px 18px;overflow-y:auto;
+    border-right:1px solid rgba(22,48,43,.08);
+    background:rgba(255,255,255,.45);backdrop-filter:blur(8px);
+  }
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .brand .mark{width:38px;height:38px;border-radius:11px;background:var(--primary);
+    display:grid;place-items:center;box-shadow:var(--shadow-card)}
+  .brand h1{font-family:var(--r1);font-size:21px;font-weight:600;letter-spacing:-.3px;line-height:1}
+  .brand span{font-size:11px;color:var(--muted);letter-spacing:.3px}
+  .sidebar .hint{font-size:12px;color:var(--muted);margin:14px 4px 18px;line-height:1.5}
+  .nav-group{margin-bottom:16px}
+  .nav-group > .gt{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);
+    font-weight:700;padding:0 8px;margin-bottom:6px;display:block}
+  .nav-link{display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+    padding:8px 10px;border-radius:9px;font-size:13px;color:#2c4a43;font-weight:500;transition:.15s}
+  .nav-link:hover{background:rgba(46,125,107,.08)}
+  .nav-link.on{background:var(--primary);color:#fff}
+  .nav-link .nx{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;width:26px}
+  .nav-link.on .nx{color:rgba(255,255,255,.7)}
+
+  /* ---------- Stage ---------- */
+  .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:40px 24px;min-height:100vh;position:relative}
+  .stage-title{position:absolute;top:26px;left:50%;transform:translateX(-50%);
+    text-align:center;color:#3a564f}
+  .stage-title b{font-family:var(--r1);font-weight:600}
+  .stage-title small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  /* ---------- Phone ---------- */
+  .phone{
+    width:390px;height:830px;background:#0c1916;border-radius:46px;
+    padding:13px;box-shadow:0 40px 80px -20px rgba(15,40,34,.45), 0 0 0 1px rgba(0,0,0,.2);
+    position:relative;
+  }
+  .phone::after{content:"";position:absolute;top:20px;left:50%;transform:translateX(-50%);
+    width:120px;height:26px;background:#0c1916;border-radius:0 0 16px 16px;z-index:40}
+  .viewport{width:100%;height:100%;background:var(--mist);border-radius:34px;overflow:hidden;position:relative}
+  .screens{position:absolute;inset:0}
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;
+    animation:fade .28s ease}
+  .screen.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.screen.active,.phone{animation:none}}
+
+  .statusbar{height:46px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;
+    padding:0 24px 6px;font-size:13px;font-weight:600;color:var(--ink);position:relative;z-index:5}
+  .statusbar.on-dark{color:#fff}
+  .body{flex:1;overflow-y:auto;position:relative}
+  .pad{padding:18px}
+
+  /* App top bar */
+  .topbar{display:flex;align-items:center;gap:12px;padding:6px 18px 14px}
+  .topbar .back{width:34px;height:34px;border-radius:50%;background:var(--surface);
+    display:grid;place-items:center;box-shadow:var(--shadow-card);flex-shrink:0}
+  .topbar h2{font-family:var(--r1);font-size:20px;font-weight:600;letter-spacing:-.3px;flex:1}
+  .topbar .tb-action{width:34px;height:34px;border-radius:50%;background:var(--surface);
+    display:grid;place-items:center;box-shadow:var(--shadow-card)}
+
+  /* ---------- Components ---------- */
+  .card{background:var(--surface);border-radius:18px;box-shadow:var(--shadow-card);border:1px solid var(--line)}
+  .icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .icon-lg{width:22px;height:22px}
+  .icon-sm{width:15px;height:15px}
+
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    background:var(--primary);color:#fff;font-weight:600;font-size:15px;
+    padding:15px;border-radius:14px;box-shadow:0 6px 16px rgba(46,125,107,.25)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:var(--primary-soft);color:var(--primary);box-shadow:none}
+  .btn.outline{background:transparent;color:var(--primary);box-shadow:none;border:1.5px solid var(--line-strong)}
+  .btn.sm{padding:11px;font-size:13.5px;border-radius:11px}
+
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:12px;font-weight:600;color:#3a564f;margin:0 0 6px 3px}
+  .input{width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:13px;
+    padding:14px 14px;font-size:14px;color:var(--ink);font-family:inherit;display:flex;align-items:center;gap:9px}
+  .input span{color:var(--muted)}
+  .input input{border:none;outline:none;font:inherit;color:inherit;width:100%;background:transparent}
+  .input .ph{color:#9aa9a4}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+    padding:5px 10px;border-radius:20px;background:var(--primary-soft);color:var(--primary)}
+  .pill.amber{background:var(--amber-soft);color:#a8681e}
+  .pill.coral{background:var(--coral-soft);color:#b14228}
+  .pill.gray{background:#EDF1EF;color:var(--muted)}
+
+  /* dual-presence signature */
+  .duo{display:inline-flex;align-items:center}
+  .duo .av{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+    font-size:10px;font-weight:700;color:#fff;border:2px solid var(--surface)}
+  .duo .av+ .av{margin-left:-8px}
+  .av-h{background:#2E7D6B}
+  .av-r{background:#5A7CB0}
+  .av-a{background:#B07FA8}
+
+  /* lists */
+  .list-item{display:flex;align-items:center;gap:13px;padding:14px;background:var(--surface);
+    border-radius:15px;box-shadow:var(--shadow-card);border:1px solid var(--line);margin-bottom:10px}
+  .list-item .lead{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex-shrink:0}
+  .list-item .grow{flex:1;min-width:0}
+  .list-item .t{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .list-item .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .list-item .val{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+
+  .section-h{font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);
+    font-weight:700;margin:18px 3px 10px}
+  .section-h:first-child{margin-top:4px}
+
+  /* module grid */
+  .mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .mod{background:var(--surface);border-radius:17px;padding:15px;box-shadow:var(--shadow-card);
+    border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;min-height:108px;text-align:left}
+  .mod .mi{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+  .mod .mt{font-size:14px;font-weight:700;line-height:1.15}
+  .mod .ms{font-size:11px;color:var(--muted);line-height:1.3}
+
+  /* bottom nav */
+  .tabbar{height:74px;flex-shrink:0;background:var(--surface);border-top:1px solid var(--line);
+    display:flex;align-items:flex-start;padding:9px 6px 0;gap:2px}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);
+    font-size:10px;font-weight:600;padding-top:2px}
+  .tab.on{color:var(--primary)}
+  .tab .dot{width:5px;height:5px;border-radius:50%;background:transparent;margin-top:1px}
+  .tab.on .dot{background:var(--primary)}
+
+  .note{font-size:11.5px;color:var(--muted);line-height:1.5;display:flex;gap:7px;align-items:flex-start}
+  .note svg{flex-shrink:0;margin-top:1px}
+
+  .progress{height:7px;background:var(--line);border-radius:10px;overflow:hidden}
+  .progress > i{display:block;height:100%;background:var(--primary);border-radius:10px}
+
+  /* chat */
+  .bubble{max-width:78%;padding:10px 13px;border-radius:16px;font-size:13.5px;line-height:1.4;margin-bottom:4px}
+  .bubble.me{background:var(--primary);color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
+  .bubble.them{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:5px;align-self:flex-start}
+  .bubble .meta{font-size:9.5px;opacity:.65;margin-top:3px;display:block}
+  .msgrow{display:flex;flex-direction:column;margin-bottom:8px}
+
+  /* splash */
+  .splash{background:linear-gradient(160deg,#2E7D6B 0%, #1d5d4f 100%);color:#fff;
+    align-items:center;justify-content:center;text-align:center;gap:0}
+  .splash .logo{width:84px;height:84px;border-radius:24px;background:rgba(255,255,255,.12);
+    display:grid;place-items:center;margin-bottom:22px;backdrop-filter:blur(4px)}
+  .splash h1{font-family:var(--r1);font-size:32px;font-weight:600;letter-spacing:-.5px}
+  .splash p{font-size:13px;opacity:.85;margin-top:6px;max-width:230px;line-height:1.5}
+  .splash .load{margin-top:38px;width:120px;height:4px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden}
+  .splash .load i{display:block;height:100%;width:40%;background:#fff;border-radius:10px;
+    animation:slide 1.4s ease-in-out infinite}
+  @keyframes slide{0%{margin-left:-40%}100%{margin-left:120%}}
+  .splash .ver{position:absolute;bottom:34px;font-size:11px;opacity:.6}
+
+  .auth-head{text-align:center;padding:30px 0 8px}
+  .auth-head .logo{width:58px;height:58px;border-radius:17px;background:var(--primary);
+    display:grid;place-items:center;margin:0 auto 16px;box-shadow:var(--shadow)}
+  .auth-head h2{font-family:var(--r1);font-size:25px;font-weight:600;letter-spacing:-.4px}
+  .auth-head p{font-size:13px;color:var(--muted);margin-top:5px}
+  .link{color:var(--primary);font-weight:600;font-size:13px}
+  .center{text-align:center}
+
+  .toggle{width:40px;height:24px;border-radius:20px;background:var(--primary);position:relative;flex-shrink:0}
+  .toggle::after{content:"";position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#fff}
+  .toggle.off{background:var(--line-strong)}
+  .toggle.off::after{left:2px;right:auto}
+
+  .seg{display:flex;background:var(--mist);border-radius:12px;padding:3px;gap:2px}
+  .seg button{flex:1;padding:8px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted)}
+  .seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-card)}
+
+  .alert{display:flex;gap:10px;padding:12px 13px;border-radius:13px;font-size:12.5px;line-height:1.45;align-items:flex-start}
+  .alert.warn{background:var(--amber-soft);color:#8a5a18}
+  .alert.info{background:var(--primary-soft);color:#1d5d4f}
+
+  .donut{width:120px;height:120px;border-radius:50%;
+    background:conic-gradient(var(--primary) 0 42%, #5A7CB0 42% 66%, var(--amber) 66% 84%, #B07FA8 84% 100%);
+    display:grid;place-items:center;margin:0 auto;position:relative}
+  .donut::after{content:"";position:absolute;width:74px;height:74px;border-radius:50%;background:var(--surface)}
+  .donut .c{position:relative;z-index:2;text-align:center}
+  .donut .c b{font-family:var(--r1);font-size:18px;display:block}
+  .donut .c small{font-size:10px;color:var(--muted)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;margin-top:14px}
+  .legend i{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#3a564f;font-weight:500}
+  .legend i::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--lc,#2E7D6B)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .photo{aspect-ratio:1;border-radius:13px;background:linear-gradient(135deg,#cfe0da,#e7ede9);
+    position:relative;overflow:hidden;display:grid;place-items:center}
+  .photo .who{position:absolute;bottom:5px;right:5px}
+  .photo svg{opacity:.35}
+
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+  .cal-grid .dh{font-size:10px;color:var(--muted);font-weight:700;padding:4px 0}
+  .cal-grid .d{aspect-ratio:1;display:grid;place-items:center;font-size:12.5px;border-radius:9px;position:relative}
+  .cal-grid .d.muted{color:#b9c6c1}
+  .cal-grid .d.today{background:var(--primary);color:#fff;font-weight:700}
+  .cal-grid .d .mk{position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%}
+
+  .qr-frame{aspect-ratio:1;border-radius:18px;background:#0c1916;position:relative;overflow:hidden;
+    display:grid;place-items:center;margin-bottom:14px}
+  .qr-frame .corner{position:absolute;width:34px;height:34px;border:3px solid #fff;border-radius:6px}
+  .qr-frame .c1{top:18px;left:18px;border-right:none;border-bottom:none}
+  .qr-frame .c2{top:18px;right:18px;border-left:none;border-bottom:none}
+  .qr-frame .c3{bottom:18px;left:18px;border-right:none;border-top:none}
+  .qr-frame .c4{bottom:18px;right:18px;border-left:none;border-top:none}
+  .qr-frame .scan{position:absolute;left:18px;right:18px;height:2px;background:#3ee0b0;
+    box-shadow:0 0 12px #3ee0b0;animation:scan 2.2s ease-in-out infinite}
+  @keyframes scan{0%,100%{top:24px}50%{top:calc(100% - 24px)}}
+
+  .empty-tag{font-size:10px;color:#9aa9a4;text-align:center;padding:6px;font-style:italic}
+  .brand-logo{background-image:url("data:image/png;base64,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") !important;background-size:80% !important;background-repeat:no-repeat !important;background-position:center !important}
+
+  /* ===== MOBILE FULL-SCREEN SHELL (layout das telas inalterado) ===== */
+  html,body{height:100%}
+  body{display:block;min-height:100svh}
+  .app{
+    position:relative;
+    width:100%;
+    max-width:440px;
+    height:100vh;
+    height:100svh;
+    margin:0 auto;
+    background:var(--mist);
+    overflow:hidden;
+  }
+  @media (min-width:480px){
+    body{display:grid;place-items:center;padding:18px}
+    .app{
+      height:min(100svh - 36px, 880px);
+      border-radius:32px;
+      box-shadow:0 30px 70px -22px rgba(15,40,34,.42), 0 0 0 1px rgba(0,0,0,.05);
+    }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></symbol>
+    <symbol id="i-money" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="3"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+    <symbol id="i-med" viewBox="0 0 24 24"><path d="M11 21c-4-3-7-5.5-7-10a3.5 3.5 0 0 1 7-1 3.5 3.5 0 0 1 7 1c0 1.6-.4 2.9-1 4"/><path d="M16 14v6M13 17h6"/></symbol>
+    <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-9 7"/></symbol>
+    <symbol id="i-school" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11v5c0 1 2.5 2 5 2s5-1 5-2v-5"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-11.7 7L4 20l1.5-5.2A8 8 0 1 1 21 11.5z"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.4-2.6h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5a7 7 0 0 0 .1-1z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l2-3h8l2 3h3a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 3-5 6.5-5s6.5 1.7 6.5 5"/><circle cx="17.5" cy="8" r="2.6"/><path d="M16 15.2c3 .3 5.5 2 5.5 4.8"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-syringe" viewBox="0 0 24 24"><path d="M18 2l4 4M17 7l-9 9-4 1 1-4 9-9zM14 5l5 5M9 12l3 3"/></symbol>
+    <symbol id="i-pill" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/></symbol>
+    <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M17 21h.01M21 21v-4M14 21v-4"/></symbol>
+    <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></symbol>
+    <symbol id="i-attach" viewBox="0 0 24 24"><path d="M21 9l-9 9a4 4 0 0 1-6-6l9-9a3 3 0 0 1 4 4l-9 9a1.5 1.5 0 0 1-2-2l8-8"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+        <div class="screens" id="screens">
+
+          <!-- 2.1 SPLASH -->
+          <section class="screen active splash" id="splash" data-label="2.1 · Splash / Abertura">
+            <div class="logo brand-logo"></div>
+            <h1>Coparenta</h1>
+            <p>O espaço neutro e organizado da rotina do seu filho</p>
+            <div class="load"><i></i></div>
+            <button class="ver" data-go="login">versão 1.0.0 · toque para continuar</button>
+          </section>
+
+          <!-- 2.2 LOGIN -->
+          <section class="screen" id="login" data-label="2.2 · Login">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="body"><div class="pad">
+              <div class="auth-head">
+                <div class="logo brand-logo"></div>
+                <h2>Bem-vindo de volta</h2>
+                <p>Entre para acompanhar a rotina da Sofia</p>
+              </div>
+              <div style="margin-top:22px">
+                <div class="field"><label>E-mail</label>
+                  <div class="input"><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-user"/></svg><span class="ph">helena@email.com</span></div></div>
+                <div class="field"><label>Senha</label>
+                  <div class="input"><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-lock"/></svg><span class="ph">••••••••</span><svg class="icon icon-sm" style="stroke:var(--muted);margin-left:auto"><use href="#i-eye"/></svg></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin:4px 2px 18px">
+                  <span style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#3a564f"><span class="toggle"></span>Manter conectado</span>
+                  <button class="link" data-go="recuperar">Esqueci a senha</button>
+                </div>
+                <button class="btn" data-go="home">Entrar</button>
+                <button class="btn outline sm" style="margin-top:10px" data-go="home">
+                  <svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-shield"/></svg>Entrar com biometria</button>
+                <p class="center" style="margin-top:22px;font-size:13px;color:var(--muted)">
+                  Ainda não tem conta? <button class="link" data-go="cadastro">Criar conta</button></p>
+              </div>
+            </div></div>
+          </section>
+
+          <!-- 2.3 CADASTRO -->
+          <section class="screen" id="cadastro" data-label="2.3 · Cadastro">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="login"><svg class="icon"><use href="#i-back"/></svg></button><h2>Criar conta</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="field"><label>Nome completo</label><div class="input"><span class="ph">Helena Martins</span></div></div>
+              <div class="field"><label>E-mail</label><div class="input"><span class="ph">helena@email.com</span></div></div>
+              <div class="field"><label>Telefone</label><div class="input"><span class="ph">(41) 9 9999-0000</span></div></div>
+              <div class="field"><label>Senha</label><div class="input"><span class="ph">mínimo 8 caracteres</span></div></div>
+              <div class="field"><label>Confirmar senha</label><div class="input"><span class="ph">repita a senha</span></div></div>
+              <label style="display:flex;gap:9px;align-items:flex-start;margin:6px 2px 18px;font-size:12px;color:#3a564f;line-height:1.4">
+                <span class="toggle" style="margin-top:0"></span>
+                Li e aceito os <span class="link">Termos de Uso</span> e a <span class="link">Política de Privacidade</span></label>
+              <button class="btn" data-go="crianca">Cadastrar</button>
+            </div></div>
+          </section>
+
+          <!-- 2.4 RECUPERAR -->
+          <section class="screen" id="recuperar" data-label="2.4 · Recuperação de senha">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="login"><svg class="icon"><use href="#i-back"/></svg></button><h2>Recuperar senha</h2></div>
+            <div class="body"><div class="pad" style="padding-top:6px">
+              <div class="alert info" style="margin-bottom:18px"><svg class="icon icon-sm" style="stroke:currentColor"><use href="#i-bell"/></svg>
+                Enviaremos um código de verificação para o e-mail cadastrado.</div>
+              <div class="field"><label>E-mail cadastrado</label><div class="input"><span class="ph">helena@email.com</span></div></div>
+              <button class="btn" data-go="recuperar2">Enviar código</button>
+              <div id="recuperar2" style="margin-top:26px">
+                <p class="section-h" style="margin-top:0">Definir nova senha</p>
+                <div class="field"><label>Código recebido</label><div class="input"><span class="ph">• • • • • •</span></div></div>
+                <div class="field"><label>Nova senha</label><div class="input"><span class="ph">nova senha</span></div></div>
+                <button class="btn ghost" data-go="login">Salvar nova senha</button>
+              </div>
+            </div></div>
+          </section>
+
+          <!-- 2.5 CADASTRO CRIANÇA -->
+          <section class="screen" id="crianca" data-label="2.5 · Cadastro da criança e vínculos">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="cadastro"><svg class="icon"><use href="#i-back"/></svg></button><h2>Perfil da criança</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div style="display:flex;justify-content:center;margin-bottom:18px">
+                <div style="width:84px;height:84px;border-radius:50%;background:var(--primary-soft);display:grid;place-items:center;position:relative">
+                  <svg class="icon" style="width:34px;height:34px;stroke:var(--primary)"><use href="#i-user"/></svg>
+                  <div style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(--primary);display:grid;place-items:center;border:2px solid #fff">
+                    <svg class="icon icon-sm" style="stroke:#fff"><use href="#i-cam"/></svg></div>
+                </div>
+              </div>
+              <div class="field"><label>Nome da criança</label><div class="input"><span class="ph">Sofia Martins Costa</span></div></div>
+              <div class="field"><label>Data de nascimento</label><div class="input"><span class="ph">14/03/2018</span></div></div>
+              <div class="field"><label>Observações gerais</label><div class="input" style="min-height:64px;align-items:flex-start"><span class="ph">Alergia a amendoim. Usa óculos.</span></div></div>
+
+              <p class="section-h">Vincular responsáveis</p>
+              <div class="list-item">
+                <div class="lead" style="background:var(--primary-soft)"><span class="av av-h" style="border:none">H</span></div>
+                <div class="grow"><div class="t">Helena Martins (você)</div><div class="s">Titular · alimenta os dados</div></div>
+                <span class="pill">Edição</span>
+              </div>
+              <button class="list-item" style="width:100%;text-align:left" data-go="acessos">
+                <div class="lead" style="background:var(--mist)"><svg class="icon" style="stroke:var(--muted)"><use href="#i-plus"/></svg></div>
+                <div class="grow"><div class="t">Convidar outro responsável</div><div class="s">Por e-mail ou telefone · defina o que acompanha</div></div>
+              </button>
+              <button class="btn" style="margin-top:14px" data-go="acessos">Salvar e enviar convite</button>
+            </div></div>
+          </section>
+
+          <!-- 2.6 ACESSOS -->
+          <section class="screen" id="acessos" data-label="2.6 · Níveis de acesso e convidados">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="crianca"><svg class="icon"><use href="#i-back"/></svg></button><h2>Acessos</h2>
+              <button class="tb-action"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="alert info" style="margin-bottom:16px"><svg class="icon icon-sm" style="stroke:currentColor"><use href="#i-users"/></svg>
+                Defina, por pessoa, quais módulos ficam visíveis e se o acesso é de leitura ou edição.</div>
+
+              <div class="card" style="padding:14px;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px">
+                  <span class="av av-r" style="width:38px;height:38px;border:none">R</span>
+                  <div><div style="font-weight:700;font-size:14px">Rafael Costa</div><div style="font-size:12px;color:var(--muted)">Pai · vínculo ativo</div></div>
+                  <span class="pill" style="margin-left:auto">Edição</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line)"><span>Financeiro</span><span class="toggle"></span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line)"><span>Ficha médica</span><span class="toggle"></span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line)"><span>Documentos legais</span><span class="toggle"></span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line)"><span>Agenda e mensagens</span><span class="toggle"></span></div>
+              </div>
+
+              <div class="card" style="padding:14px">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px">
+                  <span class="av av-a" style="width:38px;height:38px;border:none">V</span>
+                  <div><div style="font-weight:700;font-size:14px">Vó Marília</div><div style="font-size:12px;color:var(--muted)">Convidada · somente leitura</div></div>
+                  <span class="pill gray" style="margin-left:auto">Leitura</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line)"><span>Ficha médica</span><span class="toggle"></span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line)"><span>Agenda</span><span class="toggle"></span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px solid var(--line);color:#b9c6c1"><span>Financeiro</span><span class="toggle off"></span></div>
+              </div>
+              <button class="btn" style="margin-top:16px" data-go="home">Concluir configuração</button>
+            </div></div>
+          </section>
+
+          <!-- 3. HOME -->
+          <section class="screen" id="home" data-label="3 · Início (Home / Painel)">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="body">
+              <div class="pad" style="padding-bottom:8px">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="width:50px;height:50px;border-radius:16px;background:linear-gradient(135deg,#cfe0da,#aecdc2);display:grid;place-items:center">
+                    <svg class="icon" style="stroke:var(--primary)"><use href="#i-user"/></svg></div>
+                  <div style="flex:1">
+                    <div style="font-size:12px;color:var(--muted)">Acompanhando</div>
+                    <div style="font-family:var(--r1);font-size:19px;font-weight:600">Sofia, 7 anos</div>
+                  </div>
+                  <button class="tb-action" data-go="notif" style="position:relative">
+                    <svg class="icon" style="stroke:var(--ink)"><use href="#i-bell"/></svg>
+                    <span style="position:absolute;top:6px;right:7px;width:8px;height:8px;background:var(--coral);border-radius:50%;border:1.5px solid #fff"></span></button>
+                </div>
+
+                <div class="card" style="padding:13px;margin-top:14px;display:flex;align-items:center;gap:10px;background:var(--amber-soft);border-color:#f2dcbb">
+                  <svg class="icon" style="stroke:#a8681e"><use href="#i-clock"/></svg>
+                  <div style="flex:1;font-size:12.5px;color:#8a5a18;line-height:1.35"><b>1 compromisso aguarda sua autorização</b><br>Festa de aniversário · sábado</div>
+                  <button class="link" style="color:#a8681e" data-go="ag-auth">Ver</button>
+                </div>
+
+                <p class="section-h">Módulos</p>
+                <div class="mod-grid">
+                  <button class="mod" data-go="fin-dash"><div class="mi" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-money"/></svg></div>
+                    <div><div class="mt">Financeiro</div><div class="ms">R$ 1.840 este mês</div></div></button>
+                  <button class="mod" data-go="doc-lista"><div class="mi" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-doc"/></svg></div>
+                    <div><div class="mt">Documentos</div><div class="ms">6 arquivos</div></div></button>
+                  <button class="mod" data-go="med-painel"><div class="mi" style="background:var(--coral-soft)"><svg class="icon" style="stroke:var(--coral)"><use href="#i-med"/></svg></div>
+                    <div><div class="mt">Ficha médica</div><div class="ms">1 vacina pendente</div></div></button>
+                  <button class="mod" data-go="foto-gal"><div class="mi" style="background:#F2E9F1"><svg class="icon" style="stroke:#B07FA8"><use href="#i-photo"/></svg></div>
+                    <div><div class="mt">Fotos</div><div class="ms">128 registros</div></div></button>
+                  <button class="mod" data-go="esc-painel"><div class="mi" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-school"/></svg></div>
+                    <div><div class="mt">Escola</div><div class="ms">Colégio Vinci</div></div></button>
+                  <button class="mod" data-go="ag-view"><div class="mi" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-cal"/></svg></div>
+                    <div><div class="mt">Agenda</div><div class="ms">3 nesta semana</div></div></button>
+                </div>
+              </div>
+            </div>
+            <nav class="tabbar">
+              <button class="tab on"><svg class="icon"><use href="#i-home"/></svg>Início<span class="dot"></span></button>
+              <button class="tab" data-go="fin-dash"><svg class="icon"><use href="#i-money"/></svg>Financeiro<span class="dot"></span></button>
+              <button class="tab" data-go="ag-view"><svg class="icon"><use href="#i-cal"/></svg>Agenda<span class="dot"></span></button>
+              <button class="tab" data-go="msg-lista"><svg class="icon"><use href="#i-chat"/></svg>Mensagens<span class="dot"></span></button>
+              <button class="tab" data-go="config"><svg class="icon"><use href="#i-gear"/></svg>Mais<span class="dot"></span></button>
+            </nav>
+          </section>
+
+          <!-- 4.1 FIN DASH -->
+          <section class="screen" id="fin-dash" data-label="4.1 · Financeiro · Dashboard">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Financeiro</h2>
+              <button class="tb-action" data-go="fin-hist"><svg class="icon"><use href="#i-clock"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="seg" style="margin-bottom:16px"><button>Mês</button><button class="on">Maio</button><button>Ano</button></div>
+              <div class="card" style="padding:18px;text-align:center;margin-bottom:14px">
+                <div style="font-size:12px;color:var(--muted)">Total acumulado · maio</div>
+                <div style="font-family:var(--r1);font-size:34px;font-weight:600;margin:4px 0 14px">R$ 1.840,50</div>
+                <div class="donut"></div>
+                <div class="legend">
+                  <i style="--lc:#2E7D6B">Saúde · 42%</i><i style="--lc:#5A7CB0">Alimentação · 24%</i>
+                  <i style="--lc:#E0913C">Educação · 18%</i><i style="--lc:#B07FA8">Lazer · 16%</i>
+                </div>
+              </div>
+              <div class="note" style="margin-bottom:14px"><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-users"/></svg>
+                Lançamentos de <b style="color:#2E7D6B">Helena</b> e <b style="color:#5A7CB0">Rafael</b> · ambos alimentam os dados</div>
+              <button class="btn" data-go="fin-reg"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-plus"/></svg>Registrar gasto</button>
+            </div></div>
+          </section>
+
+          <!-- 4.2 FIN REGISTRO -->
+          <section class="screen" id="fin-reg" data-label="4.2 · Registro de gasto">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="fin-dash"><svg class="icon"><use href="#i-back"/></svg></button><h2>Registrar gasto</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <button class="card" style="width:100%;padding:16px;display:flex;align-items:center;gap:12px;margin-bottom:18px;text-align:left;border:1.5px dashed var(--line-strong)" data-go="fin-qr">
+                <div style="width:44px;height:44px;border-radius:12px;background:var(--primary);display:grid;place-items:center"><svg class="icon" style="stroke:#fff"><use href="#i-qr"/></svg></div>
+                <div style="flex:1"><div style="font-weight:700;font-size:14px">Ler nota fiscal (QR Code)</div><div style="font-size:12px;color:var(--muted)">Preenche valor e itens automaticamente</div></div>
+                <svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-back"/></svg>
+              </button>
+              <p class="empty-tag" style="margin-bottom:14px">— ou preencha manualmente —</p>
+              <div class="field"><label>Valor</label><div class="input"><span>R$</span><span class="ph">320,00</span></div></div>
+              <div class="field"><label>Data</label><div class="input"><span class="ph">12/05/2025</span></div></div>
+              <div class="field"><label>Categoria</label>
+                <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:2px">
+                  <span class="pill">Saúde</span><span class="pill gray">Alimentação</span><span class="pill gray">Educação</span><span class="pill gray">Lazer</span>
+                </div></div>
+              <div class="field" style="margin-top:13px"><label>Descrição</label><div class="input"><span class="ph">Consulta pediatra</span></div></div>
+              <div class="field"><label>Responsável pelo lançamento</label><div class="input"><span class="av av-h" style="border:none;margin-right:4px">H</span><span>Helena Martins</span></div></div>
+              <button class="card" style="width:100%;padding:13px;display:flex;align-items:center;gap:9px;margin-bottom:14px;color:var(--primary);font-weight:600;font-size:13px;justify-content:center">
+                <svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-attach"/></svg>Anexar comprovante</button>
+              <button class="btn" data-go="fin-hist">Salvar lançamento</button>
+            </div></div>
+          </section>
+
+          <!-- 4.3 FIN QR -->
+          <section class="screen" id="fin-qr" data-label="4.3 · Leitura de nota (QR Code)">
+            <div class="statusbar on-dark"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="body" style="background:#0c1916">
+              <div class="topbar" style="padding-top:0"><button class="back" data-go="fin-reg" style="background:rgba(255,255,255,.15)"><svg class="icon" style="stroke:#fff"><use href="#i-back"/></svg></button>
+                <h2 style="color:#fff">Ler nota fiscal</h2></div>
+              <div class="pad" style="padding-top:0">
+                <div class="qr-frame" style="margin-bottom:20px">
+                  <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+                  <span class="scan"></span>
+                  <svg class="icon" style="width:60px;height:60px;stroke:rgba(255,255,255,.25)"><use href="#i-qr"/></svg>
+                </div>
+                <p style="color:rgba(255,255,255,.7);text-align:center;font-size:12.5px;margin-bottom:20px">Aponte para o QR Code da nota fiscal (NFC-e)</p>
+                <div class="card" style="padding:14px">
+                  <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">DADOS LIDOS · CONFIRA</div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--muted)">Estabelecimento</span><b>Drogaria São Paulo</b></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--muted)">Valor</span><b>R$ 87,40</b></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;align-items:center"><span style="color:var(--muted)">Categoria sugerida</span><span class="pill">Saúde</span></div>
+                </div>
+                <button class="btn" style="margin-top:14px" data-go="fin-hist"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-check"/></svg>Confirmar e salvar</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4.4 FIN HIST -->
+          <section class="screen" id="fin-hist" data-label="4.4 · Histórico e categorias">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="fin-dash"><svg class="icon"><use href="#i-back"/></svg></button><h2>Histórico</h2>
+              <button class="tb-action"><svg class="icon"><use href="#i-dl"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div style="display:flex;gap:7px;margin-bottom:14px;overflow:auto">
+                <span class="pill"><svg class="icon icon-sm" style="stroke:currentColor"><use href="#i-filter"/></svg>Todos</span>
+                <span class="pill gray">Saúde</span><span class="pill gray">Alimentação</span><span class="pill gray">Educação</span></div>
+
+              <div class="list-item">
+                <div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-med"/></svg></div>
+                <div class="grow"><div class="t">Consulta pediatra</div><div class="s">12 mai · Saúde · <span class="av av-h" style="width:14px;height:14px;border:none;font-size:7px;display:inline-grid;vertical-align:middle">H</span> Helena · 📎</div></div>
+                <div class="val">R$ 320</div>
+              </div>
+              <div class="list-item">
+                <div class="lead" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-school"/></svg></div>
+                <div class="grow"><div class="t">Material escolar</div><div class="s">10 mai · Educação · <span class="av av-r" style="width:14px;height:14px;border:none;font-size:7px;display:inline-grid;vertical-align:middle">R</span> Rafael · 📎</div></div>
+                <div class="val">R$ 215</div>
+              </div>
+              <div class="list-item">
+                <div class="lead" style="background:var(--coral-soft)"><svg class="icon" style="stroke:var(--coral)"><use href="#i-money"/></svg></div>
+                <div class="grow"><div class="t">Drogaria São Paulo</div><div class="s">08 mai · Saúde · <span class="av av-h" style="width:14px;height:14px;border:none;font-size:7px;display:inline-grid;vertical-align:middle">H</span> Helena · 📎</div></div>
+                <div class="val">R$ 87</div>
+              </div>
+              <div class="list-item">
+                <div class="lead" style="background:#F2E9F1"><svg class="icon" style="stroke:#B07FA8"><use href="#i-money"/></svg></div>
+                <div class="grow"><div class="t">Cinema + lanche</div><div class="s">04 mai · Lazer · <span class="av av-r" style="width:14px;height:14px;border:none;font-size:7px;display:inline-grid;vertical-align:middle">R</span> Rafael</div></div>
+                <div class="val">R$ 96</div>
+              </div>
+              <div class="card" style="padding:14px;margin-top:6px">
+                <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px">SUBTOTAIS · MAIO</div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span>Saúde</span><b>R$ 772,90</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span>Educação</span><b>R$ 441,60</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span>Lazer</span><b>R$ 294,40</b></div>
+              </div>
+            </div></div>
+          </section>
+
+          <!-- 5.1 DOC LISTA -->
+          <section class="screen" id="doc-lista" data-label="5.1 · Documentos · Lista">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Documentos</h2>
+              <button class="tb-action" data-go="doc-up"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="input" style="margin-bottom:16px"><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-search"/></svg><span class="ph">Buscar documento</span></div>
+              <button class="list-item" style="width:100%;text-align:left" data-go="doc-view">
+                <div class="lead" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-doc"/></svg></div>
+                <div class="grow"><div class="t">Sentença de divórcio</div><div class="s">Incluído em 03/02/2024 · PDF</div></div>
+                <svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-eye"/></svg></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="doc-view">
+                <div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-doc"/></svg></div>
+                <div class="grow"><div class="t">Termo de fixação de pensão</div><div class="s">Incluído em 03/02/2024 · PDF</div></div>
+                <svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-eye"/></svg></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="doc-view">
+                <div class="lead" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-doc"/></svg></div>
+                <div class="grow"><div class="t">Certidão de nascimento</div><div class="s">Incluído em 28/01/2024 · Imagem</div></div>
+                <svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-eye"/></svg></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="doc-view">
+                <div class="lead" style="background:#F2E9F1"><svg class="icon" style="stroke:#B07FA8"><use href="#i-doc"/></svg></div>
+                <div class="grow"><div class="t">Carteira de identidade</div><div class="s">Incluído em 28/01/2024 · Imagem</div></div>
+                <svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-eye"/></svg></button>
+              <button class="btn" style="margin-top:8px" data-go="doc-up"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-plus"/></svg>Adicionar documento</button>
+            </div></div>
+          </section>
+
+          <!-- 5.2 DOC UPLOAD -->
+          <section class="screen" id="doc-up" data-label="5.2 · Upload de documento">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="doc-lista"><svg class="icon"><use href="#i-back"/></svg></button><h2>Novo documento</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="card" style="padding:30px 16px;text-align:center;border:1.5px dashed var(--line-strong);margin-bottom:18px">
+                <svg class="icon" style="width:34px;height:34px;stroke:var(--primary);margin-bottom:10px"><use href="#i-dl"/></svg>
+                <div style="font-weight:600;font-size:14px;margin-bottom:3px">Selecionar arquivo ou fotografar</div>
+                <div style="font-size:12px;color:var(--muted)">Foto ou PDF · até 20 MB</div>
+                <div style="display:flex;gap:8px;margin-top:14px"><button class="btn outline sm">Galeria</button><button class="btn ghost sm"><svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-cam"/></svg>Câmera</button></div>
+              </div>
+              <div class="field"><label>Tipo do documento</label>
+                <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:2px"><span class="pill">Sentença</span><span class="pill gray">Pensão</span><span class="pill gray">Certidão</span><span class="pill gray">Outro</span></div></div>
+              <div class="field" style="margin-top:13px"><label>Título</label><div class="input"><span class="ph">Sentença de divórcio</span></div></div>
+              <div class="field"><label>Data</label><div class="input"><span class="ph">03/02/2024</span></div></div>
+              <button class="btn" data-go="doc-lista">Salvar documento</button>
+            </div></div>
+          </section>
+
+          <!-- 5.3 DOC VIEW -->
+          <section class="screen" id="doc-view" data-label="5.3 · Visualização do documento">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="doc-lista"><svg class="icon"><use href="#i-back"/></svg></button><h2>Documento</h2>
+              <button class="tb-action"><svg class="icon"><use href="#i-dl"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="card" style="aspect-ratio:.74;background:#fbfcfb;display:flex;flex-direction:column;padding:20px;gap:8px;margin-bottom:14px">
+                <div style="height:11px;width:55%;background:var(--line-strong);border-radius:3px"></div>
+                <div style="height:8px;width:90%;background:var(--line);border-radius:3px;margin-top:6px"></div>
+                <div style="height:8px;width:85%;background:var(--line);border-radius:3px"></div>
+                <div style="height:8px;width:92%;background:var(--line);border-radius:3px"></div>
+                <div style="height:8px;width:40%;background:var(--line);border-radius:3px"></div>
+                <div style="height:8px;width:88%;background:var(--line);border-radius:3px;margin-top:10px"></div>
+                <div style="height:8px;width:80%;background:var(--line);border-radius:3px"></div>
+                <div style="margin-top:auto;display:flex;justify-content:center"><svg class="icon" style="width:30px;height:30px;stroke:var(--line-strong)"><use href="#i-doc"/></svg></div>
+              </div>
+              <div class="card" style="padding:14px">
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:var(--muted)">Tipo</span><b>Sentença de divórcio</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span style="color:var(--muted)">Data</span><b>03/02/2024</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;align-items:center"><span style="color:var(--muted)">Incluído por</span><span><span class="av av-h" style="width:16px;height:16px;border:none;font-size:8px;display:inline-grid;vertical-align:middle">H</span> Helena</span></div>
+              </div>
+              <div style="display:flex;gap:9px;margin-top:14px"><button class="btn ghost sm"><svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-dl"/></svg>Baixar</button><button class="btn outline sm">Compartilhar</button></div>
+            </div></div>
+          </section>
+
+          <!-- 6.1 MED PAINEL -->
+          <section class="screen" id="med-painel" data-label="6.1 · Médico · Painel de saúde">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Ficha médica</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="alert warn" style="margin-bottom:16px"><svg class="icon icon-sm" style="stroke:currentColor"><use href="#i-syringe"/></svg>
+                <span><b>Vacina pendente:</b> reforço tríplice viral previsto para 20/05.</span></div>
+              <div class="mod-grid">
+                <button class="mod" data-go="med-vac"><div class="mi" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-syringe"/></svg></div><div><div class="mt">Vacinação</div><div class="ms">1 pendente</div></div></button>
+                <button class="mod" data-go="med-medic"><div class="mi" style="background:var(--coral-soft)"><svg class="icon" style="stroke:var(--coral)"><use href="#i-pill"/></svg></div><div><div class="mt">Medicações</div><div class="ms">1 em uso</div></div></button>
+                <button class="mod" data-go="med-medic"><div class="mi" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-med"/></svg></div><div><div class="mt">Tratamentos</div><div class="ms">Ortodontia</div></div></button>
+                <button class="mod" data-go="med-emerg"><div class="mi" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-phone"/></svg></div><div><div class="mt">Emergência</div><div class="ms">4 contatos</div></div></button>
+              </div>
+              <div class="card" style="padding:14px;margin-top:14px">
+                <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px">DADOS RÁPIDOS</div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span>Tipo sanguíneo</span><b>O+</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span>Alergias</span><b>Amendoim</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span>Plano de saúde</span><b>Unimed · 0000 1234</b></div>
+              </div>
+            </div></div>
+          </section>
+
+          <!-- 6.2 MED VAC -->
+          <section class="screen" id="med-vac" data-label="6.2 · Carteira de vacinação">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="med-painel"><svg class="icon"><use href="#i-back"/></svg></button><h2>Vacinação</h2>
+              <button class="tb-action"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="list-item"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-check"/></svg></div>
+                <div class="grow"><div class="t">Tríplice viral · 1ª dose</div><div class="s">Aplicada em 14/03/2019</div></div><span class="pill">Em dia</span></div>
+              <div class="list-item"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-check"/></svg></div>
+                <div class="grow"><div class="t">Febre amarela</div><div class="s">Aplicada em 02/08/2020</div></div><span class="pill">Em dia</span></div>
+              <div class="list-item" style="border-color:#f2dcbb"><div class="lead" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-clock"/></svg></div>
+                <div class="grow"><div class="t">Tríplice viral · reforço</div><div class="s">Prevista para 20/05/2025</div></div><span class="pill amber">Pendente</span></div>
+              <div class="list-item"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-check"/></svg></div>
+                <div class="grow"><div class="t">DTP</div><div class="s">Aplicada em 10/11/2022</div></div><span class="pill">Em dia</span></div>
+              <button class="card" style="width:100%;padding:13px;display:flex;align-items:center;gap:9px;color:var(--primary);font-weight:600;font-size:13px;justify-content:center;margin-top:4px">
+                <svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-attach"/></svg>Anexar comprovante de vacina</button>
+            </div></div>
+          </section>
+
+          <!-- 6.3 MED MEDIC -->
+          <section class="screen" id="med-medic" data-label="6.3 · Medicações e tratamentos">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="med-painel"><svg class="icon"><use href="#i-back"/></svg></button><h2>Medicações</h2>
+              <button class="tb-action"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <p class="section-h" style="margin-top:0">Em andamento</p>
+              <div class="card" style="padding:15px;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div class="lead" style="width:38px;height:38px;background:var(--coral-soft)"><svg class="icon icon-sm" style="stroke:var(--coral)"><use href="#i-pill"/></svg></div>
+                  <div><div style="font-weight:700;font-size:14px">Amoxicilina 250mg</div><div style="font-size:12px;color:var(--muted)">Infecção de ouvido</div></div></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;border-top:1px solid var(--line)"><span style="color:var(--muted)">Dosagem</span><b>5ml · 8/8h</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0"><span style="color:var(--muted)">Período</span><b>10/05 a 17/05</b></div>
+                <button class="btn outline sm" style="margin-top:10px">Encerrar tratamento</button>
+              </div>
+              <p class="section-h">Tratamento contínuo</p>
+              <div class="card" style="padding:15px">
+                <div style="display:flex;align-items:center;gap:10px"><div class="lead" style="width:38px;height:38px;background:#E7EEF7"><svg class="icon icon-sm" style="stroke:#5A7CB0"><use href="#i-med"/></svg></div>
+                  <div><div style="font-weight:700;font-size:14px">Ortodontia</div><div style="font-size:12px;color:var(--muted)">Manutenção mensal · Dra. Lúcia</div></div></div>
+              </div>
+            </div></div>
+          </section>
+
+          <!-- 6.4 MED EMERG -->
+          <section class="screen" id="med-emerg" data-label="6.4 · Contatos de emergência">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="med-painel"><svg class="icon"><use href="#i-back"/></svg></button><h2>Emergência</h2>
+              <button class="tb-action"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="list-item"><div class="lead" style="background:var(--coral-soft)"><svg class="icon" style="stroke:var(--coral)"><use href="#i-med"/></svg></div>
+                <div class="grow"><div class="t">Dra. Renata · Pediatra</div><div class="s">(41) 9 8888-1111</div></div>
+                <button class="tb-action" style="background:var(--primary)"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-phone"/></svg></button></div>
+              <div class="list-item"><div class="lead" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-med"/></svg></div>
+                <div class="grow"><div class="t">Hospital Pequeno Príncipe</div><div class="s">(41) 3 310-1010</div></div>
+                <button class="tb-action" style="background:var(--primary)"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-phone"/></svg></button></div>
+              <div class="list-item"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-shield"/></svg></div>
+                <div class="grow"><div class="t">Unimed · Plano de saúde</div><div class="s">0800 642 0000</div></div>
+                <button class="tb-action" style="background:var(--primary)"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-phone"/></svg></button></div>
+              <div class="list-item"><div class="lead" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-user"/></svg></div>
+                <div class="grow"><div class="t">Vó Marília</div><div class="s">(41) 9 7777-2222</div></div>
+                <button class="tb-action" style="background:var(--primary)"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-phone"/></svg></button></div>
+            </div></div>
+          </section>
+
+          <!-- 7.1 FOTO GALERIA -->
+          <section class="screen" id="foto-gal" data-label="7.1 · Fotos · Galeria">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Fotos</h2>
+              <button class="tb-action" data-go="foto-up"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="seg" style="margin-bottom:14px"><button class="on">Tudo</button><button>Por mês</button><button>Álbuns</button></div>
+              <p class="section-h" style="margin-top:0">Maio 2025</p>
+              <div class="grid2">
+                <button class="photo" data-go="foto-view"><svg class="icon"><use href="#i-photo"/></svg><span class="who"><span class="av av-h" style="width:18px;height:18px;font-size:8px">H</span></span></button>
+                <button class="photo" data-go="foto-view"><svg class="icon"><use href="#i-photo"/></svg><span class="who"><span class="av av-r" style="width:18px;height:18px;font-size:8px">R</span></span></button>
+                <button class="photo" data-go="foto-view"><svg class="icon"><use href="#i-photo"/></svg><span class="who"><span class="av av-h" style="width:18px;height:18px;font-size:8px">H</span></span></button>
+                <button class="photo" data-go="foto-view"><svg class="icon"><use href="#i-photo"/></svg><span class="who"><span class="av av-r" style="width:18px;height:18px;font-size:8px">R</span></span></button>
+                <button class="photo" data-go="foto-view"><svg class="icon"><use href="#i-photo"/></svg><span class="who"><span class="av av-h" style="width:18px;height:18px;font-size:8px">H</span></span></button>
+                <button class="photo" data-go="foto-view"><svg class="icon"><use href="#i-photo"/></svg><span class="who"><span class="av av-r" style="width:18px;height:18px;font-size:8px">R</span></span></button>
+              </div>
+            </div></div>
+          </section>
+
+          <!-- 7.2 FOTO UPLOAD -->
+          <section class="screen" id="foto-up" data-label="7.2 · Upload de fotos">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="foto-gal"><svg class="icon"><use href="#i-back"/></svg></button><h2>Adicionar fotos</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div style="display:flex;gap:9px;margin-bottom:18px">
+                <button class="btn ghost"><svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-grid"/></svg>Galeria</button>
+                <button class="btn outline"><svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-cam"/></svg>Câmera</button>
+              </div>
+              <p class="section-h" style="margin-top:0">Selecionadas · 3</p>
+              <div class="grid2">
+                <div class="photo" style="border:2px solid var(--primary)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-check"/></svg></div>
+                <div class="photo" style="border:2px solid var(--primary)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-check"/></svg></div>
+                <div class="photo" style="border:2px solid var(--primary)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-check"/></svg></div>
+                <div class="photo"><svg class="icon"><use href="#i-photo"/></svg></div>
+              </div>
+              <div class="field" style="margin-top:16px"><label>Adicionar ao álbum</label>
+                <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:2px"><span class="pill">Crescimento</span><span class="pill gray">Aniversários</span><span class="pill gray">+ Novo álbum</span></div></div>
+              <button class="btn" style="margin-top:8px" data-go="foto-gal">Enviar 3 fotos</button>
+            </div></div>
+          </section>
+
+          <!-- 7.3 FOTO VIEW -->
+          <section class="screen" id="foto-view" data-label="7.3 · Visualização de foto">
+            <div class="statusbar on-dark"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="body" style="background:#0c1916;display:flex;flex-direction:column">
+              <div class="topbar" style="padding-top:0"><button class="back" data-go="foto-gal" style="background:rgba(255,255,255,.15)"><svg class="icon" style="stroke:#fff"><use href="#i-back"/></svg></button>
+                <h2 style="color:#fff">Foto</h2><button class="tb-action" style="background:rgba(255,255,255,.15)"><svg class="icon" style="stroke:#fff"><use href="#i-dl"/></svg></button></div>
+              <div style="flex:1;display:grid;place-items:center;padding:20px">
+                <div style="width:100%;aspect-ratio:1;border-radius:18px;background:linear-gradient(135deg,#2a4a42,#3e6358);display:grid;place-items:center">
+                  <svg class="icon" style="width:60px;height:60px;stroke:rgba(255,255,255,.3)"><use href="#i-photo"/></svg></div>
+              </div>
+              <div style="padding:0 20px 24px;color:#fff">
+                <div style="display:flex;align-items:center;gap:9px;font-size:13px"><span class="av av-h" style="border:none">H</span>
+                  <div><div style="font-weight:600">Enviada por Helena</div><div style="font-size:11px;opacity:.6">12 de maio de 2025</div></div></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 8.1 ESCOLA PAINEL -->
+          <section class="screen" id="esc-painel" data-label="8.1 · Escola · Painel">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Escola</h2>
+              <button class="tb-action" data-go="esc-ativ"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="card" style="padding:15px;margin-bottom:16px">
+                <div style="display:flex;align-items:center;gap:11px"><div class="lead" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-school"/></svg></div>
+                  <div><div style="font-weight:700;font-size:15px">Colégio Da Vinci</div><div style="font-size:12px;color:var(--muted)">2º ano · Turma B · Manhã</div></div></div>
+              </div>
+              <p class="section-h" style="margin-top:0">Atividades</p>
+              <div class="list-item"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-school"/></svg></div>
+                <div class="grow"><div class="t">Aula regular</div><div class="s">Seg a sex · 7h30–12h · Curricular</div></div></div>
+              <div class="list-item"><div class="lead" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-cal"/></svg></div>
+                <div class="grow"><div class="t">Natação</div><div class="s">Ter e qui · 15h · Extracurricular</div></div></div>
+              <div class="list-item"><div class="lead" style="background:#F2E9F1"><svg class="icon" style="stroke:#B07FA8"><use href="#i-cal"/></svg></div>
+                <div class="grow"><div class="t">Aula de violão</div><div class="s">Qua · 16h · Extracurricular</div></div></div>
+              <div class="alert info" style="margin-top:8px"><svg class="icon icon-sm" style="stroke:currentColor"><use href="#i-cal"/></svg>
+                <span><b>Calendário acadêmico:</b> reunião de pais em 30/05.</span></div>
+            </div></div>
+          </section>
+
+          <!-- 8.2 ESCOLA ATIVIDADE -->
+          <section class="screen" id="esc-ativ" data-label="8.2 · Cadastro de atividade">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="esc-painel"><svg class="icon"><use href="#i-back"/></svg></button><h2>Nova atividade</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="field"><label>Nome da atividade</label><div class="input"><span class="ph">Natação</span></div></div>
+              <div class="field"><label>Tipo</label>
+                <div class="seg" style="margin-top:2px"><button class="on">Extracurricular</button><button>Curricular</button></div></div>
+              <div class="field" style="margin-top:13px"><label>Horário</label><div class="input"><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-clock"/></svg><span class="ph">Ter e qui · 15h00</span></div></div>
+              <div class="field"><label>Local</label><div class="input"><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-pin"/></svg><span class="ph">Academia AquaKids</span></div></div>
+              <div class="field"><label>Responsável por levar</label><div class="input"><span class="av av-r" style="border:none;margin-right:4px">R</span><span>Rafael Costa</span></div></div>
+              <label style="display:flex;gap:9px;align-items:center;margin:6px 2px 16px;font-size:12.5px;color:#3a564f">
+                <span class="toggle"></span>Criar lembrete na Agenda</label>
+              <button class="btn" data-go="esc-painel">Salvar atividade</button>
+            </div></div>
+          </section>
+
+          <!-- 9.1 AGENDA VIEW -->
+          <section class="screen" id="ag-view" data-label="9.1 · Agenda · Visualização">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Agenda</h2>
+              <button class="tb-action" data-go="ag-cad"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="seg" style="margin-bottom:14px"><button>Dia</button><button>Semana</button><button class="on">Maio</button></div>
+              <div class="card" style="padding:14px;margin-bottom:16px">
+                <div class="cal-grid" style="margin-bottom:6px">
+                  <span class="dh">D</span><span class="dh">S</span><span class="dh">T</span><span class="dh">Q</span><span class="dh">Q</span><span class="dh">S</span><span class="dh">S</span>
+                </div>
+                <div class="cal-grid">
+                  <span class="d muted">27</span><span class="d muted">28</span><span class="d muted">29</span><span class="d muted">30</span><span class="d">1</span><span class="d">2</span><span class="d">3</span>
+                  <span class="d">4</span><span class="d">5</span><span class="d">6<span class="mk" style="background:#5A7CB0"></span></span><span class="d">7</span><span class="d">8</span><span class="d">9</span><span class="d">10</span>
+                  <span class="d">11</span><span class="d">12</span><span class="d">13</span><span class="d">14</span><span class="d">15<span class="mk" style="background:#2E7D6B"></span></span><span class="d today">16</span><span class="d">17<span class="mk" style="background:var(--amber)"></span></span>
+                  <span class="d">18</span><span class="d">19</span><span class="d">20<span class="mk" style="background:var(--coral)"></span></span><span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d">24</span>
+                </div>
+              </div>
+              <p class="section-h" style="margin-top:0">Próximos</p>
+              <div class="list-item"><div class="lead" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-cal"/></svg></div>
+                <div class="grow"><div class="t">Festa de aniversário (primo)</div><div class="s">Sáb 17 · 15h · variável</div></div><span class="pill amber">Pendente</span></div>
+              <div class="list-item" data-go="ag-cad"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-school"/></svg></div>
+                <div class="grow"><div class="t">Natação</div><div class="s">Ter 15h · fixo</div></div></div>
+              <div class="list-item"><div class="lead" style="background:var(--coral-soft)"><svg class="icon" style="stroke:var(--coral)"><use href="#i-syringe"/></svg></div>
+                <div class="grow"><div class="t">Reforço vacinal</div><div class="s">Ter 20 · 9h · fixo</div></div></div>
+            </div></div>
+          </section>
+
+          <!-- 9.2 AGENDA CADASTRO -->
+          <section class="screen" id="ag-cad" data-label="9.2 · Cadastro de compromisso">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="ag-view"><svg class="icon"><use href="#i-back"/></svg></button><h2>Novo compromisso</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="field"><label>Título</label><div class="input"><span class="ph">Festa de aniversário do primo</span></div></div>
+              <div class="field"><label>Data e horário</label><div class="input"><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-clock"/></svg><span class="ph">17/05/2025 · 15h00</span></div></div>
+              <div class="field"><label>Tipo</label>
+                <div class="seg" style="margin-top:2px"><button class="on">Variável</button><button>Fixo</button></div></div>
+              <div class="field" style="margin-top:13px"><label>Descrição</label><div class="input" style="min-height:54px;align-items:flex-start"><span class="ph">Seria fim de semana do pai. Pedir alinhamento.</span></div></div>
+              <button class="card" style="width:100%;padding:13px;display:flex;align-items:center;gap:9px;margin-bottom:14px;color:var(--primary);font-weight:600;font-size:13px;justify-content:center">
+                <svg class="icon icon-sm" style="stroke:var(--primary)"><use href="#i-attach"/></svg>Anexar convite (imagem)</button>
+              <div class="alert info" style="margin-bottom:14px"><svg class="icon icon-sm" style="stroke:currentColor"><use href="#i-users"/></svg>
+                <span>Como afeta o tempo do outro responsável, será enviado para aprovação de <b>Rafael</b>.</span></div>
+              <button class="btn" data-go="ag-auth"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-send"/></svg>Salvar e enviar para aprovação</button>
+            </div></div>
+          </section>
+
+          <!-- 9.3 AGENDA AUTORIZACAO -->
+          <section class="screen" id="ag-auth" data-label="9.3 · Fluxo de autorização">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="ag-view"><svg class="icon"><use href="#i-back"/></svg></button><h2>Autorização</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="card" style="padding:18px;text-align:center;margin-bottom:16px">
+                <div style="width:54px;height:54px;border-radius:16px;background:var(--amber-soft);display:grid;place-items:center;margin:0 auto 12px"><svg class="icon" style="stroke:#a8681e"><use href="#i-clock"/></svg></div>
+                <span class="pill amber" style="margin-bottom:10px">Aguardando aprovação</span>
+                <div style="font-family:var(--r1);font-size:19px;font-weight:600;margin-top:6px">Festa de aniversário do primo</div>
+                <div style="font-size:13px;color:var(--muted);margin-top:4px">Sábado, 17 de maio · 15h00</div>
+              </div>
+              <div class="card" style="padding:14px;margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--muted)">Solicitado por</span><span><span class="av av-h" style="width:16px;height:16px;border:none;font-size:8px;display:inline-grid;vertical-align:middle">H</span> Helena</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0"><span style="color:var(--muted)">Para aprovação de</span><span><span class="av av-r" style="width:16px;height:16px;border:none;font-size:8px;display:inline-grid;vertical-align:middle">R</span> Rafael</span></div>
+                <div style="font-size:12.5px;color:#3a564f;padding-top:8px;border-top:1px solid var(--line);margin-top:4px">"Seria o fim de semana do pai, mas a Sofia foi convidada. Tudo bem trocarmos?"</div>
+              </div>
+              <div style="display:flex;gap:9px">
+                <button class="btn outline sm" style="color:var(--coral);border-color:var(--coral-soft)"><svg class="icon icon-sm" style="stroke:var(--coral)"><use href="#i-x"/></svg>Recusar</button>
+                <button class="btn sm" data-go="ag-view"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-check"/></svg>Autorizar</button>
+              </div>
+              <button class="btn ghost sm" style="margin-top:9px" data-go="msg-conv">Comentar antes de decidir</button>
+            </div></div>
+          </section>
+
+          <!-- 10.1 MSG LISTA -->
+          <section class="screen" id="msg-lista" data-label="10.1 · Mensagens · Conversas">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Mensagens</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="alert info" style="margin-bottom:16px"><svg class="icon icon-sm" style="stroke:currentColor"><use href="#i-lock"/></svg>
+                <span>Histórico permanente: mensagens não podem ser apagadas e ficam registradas para consulta futura.</span></div>
+              <button class="list-item" style="width:100%;text-align:left" data-go="msg-conv">
+                <span class="av av-r" style="width:46px;height:46px;border:none;font-size:16px">R</span>
+                <div class="grow"><div class="t">Rafael Costa</div><div class="s">Pode levar a Sofia na natação amanhã?</div></div>
+                <div style="text-align:right"><div style="font-size:11px;color:var(--muted)">09:12</div><span style="display:inline-block;margin-top:4px;width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;font-size:11px;font-weight:700;line-height:20px;text-align:center">2</span></div></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="msg-conv">
+                <span class="av av-a" style="width:46px;height:46px;border:none;font-size:16px">V</span>
+                <div class="grow"><div class="t">Vó Marília</div><div class="s">Que linda a foto do passeio! 💚</div></div>
+                <div style="font-size:11px;color:var(--muted)">ontem</div></button>
+            </div></div>
+          </section>
+
+          <!-- 10.2 MSG CONVERSA -->
+          <section class="screen" id="msg-conv" data-label="10.2 · Tela de conversa">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="msg-lista"><svg class="icon"><use href="#i-back"/></svg></button>
+              <span class="av av-r" style="width:34px;height:34px;border:none;font-size:13px">R</span>
+              <div style="flex:1"><div style="font-weight:700;font-size:15px">Rafael Costa</div><div style="font-size:11px;color:var(--muted)">Registro permanente · histórico íntegro</div></div></div>
+            <div class="body"><div class="pad" style="padding-top:4px;display:flex;flex-direction:column">
+              <div class="empty-tag" style="margin-bottom:8px">— 13 de maio —</div>
+              <div class="msgrow" style="align-items:flex-start"><div class="bubble them">Pode levar a Sofia na natação amanhã? Tenho reunião até 16h.<span class="meta">Rafael · 09:10</span></div></div>
+              <div class="msgrow" style="align-items:flex-end"><div class="bubble me">Consigo sim. Te aviso quando sairmos da escola.<span class="meta">Helena · 09:11 ✓✓</span></div></div>
+              <div class="msgrow" style="align-items:flex-start"><div class="bubble them">Perfeito, obrigado 🙏<span class="meta">Rafael · 09:12</span></div></div>
+              <div class="msgrow" style="align-items:flex-end"><div class="bubble me" style="background:var(--amber-soft);color:#8a5a18">📎 Enviou: convite_aniversario.jpg<span class="meta" style="color:#a8681e">Helena · 09:14 ✓✓</span></div></div>
+            </div></div>
+            <div style="flex-shrink:0;padding:10px 14px;border-top:1px solid var(--line);background:var(--surface);display:flex;align-items:center;gap:9px">
+              <svg class="icon" style="stroke:var(--muted)"><use href="#i-attach"/></svg>
+              <div class="input" style="flex:1;padding:11px 14px"><span class="ph">Escreva uma mensagem…</span></div>
+              <button class="tb-action" style="background:var(--primary)"><svg class="icon icon-sm" style="stroke:#fff"><use href="#i-send"/></svg></button>
+            </div>
+          </section>
+
+          <!-- 11. CONFIG -->
+          <section class="screen" id="config" data-label="11 · Configurações">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Configurações</h2></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <div class="card" style="padding:15px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+                <span class="av av-h" style="width:48px;height:48px;border:none;font-size:18px">H</span>
+                <div><div style="font-weight:700;font-size:15px">Helena Martins</div><div style="font-size:12px;color:var(--muted)">helena@email.com · Titular</div></div>
+              </div>
+              <p class="section-h" style="margin-top:0">Perfil</p>
+              <button class="list-item" style="width:100%;text-align:left"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-user"/></svg></div><div class="grow"><div class="t">Dados, foto e senha</div></div><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-back"/></svg></button>
+              <button class="list-item" style="width:100%;text-align:left"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-lock"/></svg></div><div class="grow"><div class="t">Biometria</div></div><span class="toggle" style="margin-left:auto"></span></button>
+              <p class="section-h">Criança e vínculos</p>
+              <button class="list-item" style="width:100%;text-align:left" data-go="crianca"><div class="lead" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-user"/></svg></div><div class="grow"><div class="t">Perfil da Sofia</div></div><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-back"/></svg></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="acessos"><div class="lead" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-users"/></svg></div><div class="grow"><div class="t">Acessos e convidados</div></div><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-back"/></svg></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="notif"><div class="lead" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-bell"/></svg></div><div class="grow"><div class="t">Notificações por módulo</div></div><svg class="icon icon-sm" style="stroke:var(--muted)"><use href="#i-back"/></svg></button>
+              <p class="section-h">Conta</p>
+              <button class="list-item" style="width:100%;text-align:left"><div class="grow"><div class="t" style="font-weight:500">Termos de uso</div></div></button>
+              <button class="list-item" style="width:100%;text-align:left"><div class="grow"><div class="t" style="font-weight:500">Política de privacidade</div></div></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="login"><div class="grow"><div class="t" style="font-weight:500;color:var(--coral)">Sair</div></div></button>
+            </div></div>
+          </section>
+
+          <!-- 12. NOTIFICAÇÕES -->
+          <section class="screen" id="notif" data-label="12 · Notificações">
+            <div class="statusbar"><span>9:41</span><span>● ▮▮ 100%</span></div>
+            <div class="topbar"><button class="back" data-go="home"><svg class="icon"><use href="#i-back"/></svg></button><h2>Notificações</h2>
+              <button class="link" style="margin-left:auto">Marcar lidas</button></div>
+            <div class="body"><div class="pad" style="padding-top:0">
+              <button class="list-item" style="width:100%;text-align:left;border-color:#f2dcbb" data-go="ag-auth"><div class="lead" style="background:var(--amber-soft)"><svg class="icon" style="stroke:#a8681e"><use href="#i-clock"/></svg></div>
+                <div class="grow"><div class="t">Compromisso aguarda autorização</div><div class="s">Festa de aniversário · há 10 min</div></div><span style="width:8px;height:8px;background:var(--coral);border-radius:50%"></span></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="msg-conv"><div class="lead" style="background:var(--primary-soft)"><svg class="icon" style="stroke:var(--primary)"><use href="#i-chat"/></svg></div>
+                <div class="grow"><div class="t">Nova mensagem de Rafael</div><div class="s">"Pode levar a Sofia…" · há 1h</div></div><span style="width:8px;height:8px;background:var(--coral);border-radius:50%"></span></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="med-vac"><div class="lead" style="background:var(--coral-soft)"><svg class="icon" style="stroke:var(--coral)"><use href="#i-syringe"/></svg></div>
+                <div class="grow"><div class="t">Vacina pendente</div><div class="s">Reforço tríplice viral · 20/05</div></div></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="fin-hist"><div class="lead" style="background:#E7EEF7"><svg class="icon" style="stroke:#5A7CB0"><use href="#i-money"/></svg></div>
+                <div class="grow"><div class="t">Novo gasto lançado por Rafael</div><div class="s">Material escolar · R$ 215 · ontem</div></div></button>
+              <button class="list-item" style="width:100%;text-align:left" data-go="doc-lista"><div class="lead" style="background:#F2E9F1"><svg class="icon" style="stroke:#B07FA8"><use href="#i-doc"/></svg></div>
+                <div class="grow"><div class="t">Novo documento incluído</div><div class="s">Termo de pensão · 2 dias atrás</div></div></button>
+            </div></div>
+          </section>
+
+        </div>
+  </div>
+
+<script>
+  const screens = document.getElementById('screens');
+  const label = document.getElementById('screen-label');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  function navigate(id){
+    const target = document.getElementById(id);
+    if(!target) return;
+    screens.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    target.classList.add('active');
+    target.querySelector('.body')?.scrollTo(0,0);
+    if(label) label.textContent = target.dataset.label || '';
+    navLinks.forEach(l=>l.classList.toggle('on', l.dataset.go===id));
+    const active = document.querySelector('.nav-link.on');
+    active?.scrollIntoView({block:'nearest'});
+  }
+
+  document.body.addEventListener('click', e=>{
+    const el = e.target.closest('[data-go]');
+    if(el){ e.preventDefault(); navigate(el.dataset.go); }
+  });
+
+  // splash auto-advance
+  setTimeout(()=>{ if(document.getElementById('splash').classList.contains('active')) navigate('login'); }, 2600);
+</script>
+</body>
+</html>
